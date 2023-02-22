@@ -12,7 +12,7 @@
 
 
 .bg_text::after {
-  content: "Поддерживается Drag-n-Drop!";
+  content: "";
 }
 
 
@@ -45,7 +45,7 @@ button, input[type="button"], input[type="submit"] {
 }
 
 .canvas_container canvas {
-	height: 30em;
+	height: 10em;
 	width: 100%;
 	z-index: 1;
 	position: relative;
@@ -64,9 +64,7 @@ button, input[type="button"], input[type="submit"] {
 <h1>1. Обрежь и выпрями тэг</h1>
 <h3>Это можно сделать с помощью программы вроде Doc Scanner</h3>
  <img src="pic1.gif" alt="ШАГ 1">
-    <h1>2. Уменьши изображение под формат</h1>
-	<h3>В графическом редакторе измени<br>ширину обрезанного изображения на 500,<br>а высоту - на число, приложенное к тэгу</h3>
-	 <img src="pic2.gif" alt="ШАГ 2">
+
 
 
 
@@ -77,30 +75,65 @@ button, input[type="button"], input[type="submit"] {
             <div id="audioDropHandler">
                 <div class="title_text">
                     
-                    <h1>3. Загрузи уменьшенное изображение</h1>
+                    <h1>2. Загрузи полученное изображение и укажи ниже число, приложенное к тэгу</h1>
+					
 					<h3>После этого нажми на "Скачать WAV"</h3>
 					
 					
 					
-
-                    <input type="file"  id="pngFileInput">
+				
+                    <input type="file" hidden id="pngFileInput"><input id="imageset" type="file" onchange="readFileToScale(this.files);">
+					<input type="text" id="scaleh" value="110">
                 </div><br><br>
                 <div class="canvas_container">
                     <div class="bg_text"></div>
                     <canvas width="1" height="1" id="pngDisplay"></canvas>
                 </div><br>
-                <button onclick="downloadAudio();">Скачать WAV</button>
+                <button onclick="scale();">Скачать WAV</button>
             </div>
         </div>
     </div>
 
     
 
+<script>
+
+
+const canvasName = '#pngDisplay';
+const canvasScale = document.querySelector(canvasName);
+const ctxScale = canvasScale.getContext('2d');
+
+let img;
+function readFileToScale(files) 
+{
+	var fileReader = new FileReader();
+	fileReader.readAsDataURL(files[0]);
+	fileReader.onload = function(imgBlob) 
+	{
+		img = new Image();
+		let blobRes = imgBlob.target.result
+		img.src = blobRes;
+	}
+}
+
+function scale() 
+{
+	//ctxScale.imageSmoothingEnabled = smooth.checked;
+	let height = scaleh.value;
+	canvasScale.width = WIDTH_SIZE
+	canvasScale.height = height;
+	ctxScale.drawImage(img,0,0,img.width,img.height,0,0,WIDTH_SIZE,height);
+	
+	
+	img2audio(canvasScale.toDataURL());
+	//canvasScale.toBlob(function (blob) {img2audio(blob)});
+}
+
+</script>
 
 
 
-
-<h1>4. Загрузи WAV для зацикленного воспроизведения</h1>
+<h1>3. Загрузи WAV для зацикленного воспроизведения</h1>
 <h3>Будет играть до тех пор, пока не перезагрузишь страницу</h3>
 <input  id="audioFileChooser" type="file" onchange="readFile(this.files);">
 
@@ -343,6 +376,9 @@ document.addEventListener('play', function(e){
         let buffer = null;
         let leftChannelAudio = new Array();
 
+
+		const WIDTH_SIZE = 500
+
         const audio2img = (undecodedAudio) => {
             audioCtx.decodeAudioData(undecodedAudio, function (data) {
                 // success
@@ -368,8 +404,8 @@ document.addEventListener('play', function(e){
                     leftChannelAudio.push(bufL[i]);
                 }
                 // console.log(stride.value);
-                buildImage(leftChannelPixels, 500, ctx);
-                buildImage(leftChannelPixels, 500, leftCtx);
+                buildImage(leftChannelPixels, WIDTH_SIZE, ctx);
+                buildImage(leftChannelPixels, WIDTH_SIZE, leftCtx);
                 loading.style.opacity = "0";
             }, function () {
                 // error
@@ -479,7 +515,8 @@ document.addEventListener('play', function(e){
             link.click();
         }
         const img2audio = (imgBlob) => {
-            var img = new Image();
+            console.log(imgBlob);
+			var img = new Image();
             console.log(imgBlob);
 			img.src = imgBlob;
             img.onload = function () {
@@ -494,6 +531,7 @@ document.addEventListener('play', function(e){
                 }
                 loading.style.opacity = "0";
                 exportWAV("audio/wav", newImageData, newImageData.length);
+				downloadAudio();
             };
         }
 
