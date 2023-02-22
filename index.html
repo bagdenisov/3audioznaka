@@ -10,6 +10,18 @@
 </head>
 <style>
 
+
+.bg_text::after {
+  content: "Поддерживается Drag-n-Drop!";
+}
+
+
+.canvas_container .bg_text::after {
+  position: absolute;
+
+}
+
+
 button, input[type="button"], input[type="submit"] { 
    box-shadow:inset 0px 1px 0px 0px #fbafe3;
 	background:linear-gradient(to bottom, #ff5bb0 5%, #ef027d 100%);
@@ -26,7 +38,18 @@ button, input[type="button"], input[type="submit"] {
 	text-decoration:none;
 	text-shadow:0px 1px 0px #c70067;
 } 
-        
+
+.canvas_container {
+	display: inline-block;
+	background-color: #E5E5E5;
+}
+
+.canvas_container canvas {
+	height: 30em;
+	width: 100%;
+	z-index: 1;
+	position: relative;
+}
 
 </style>
 <body>
@@ -61,11 +84,11 @@ button, input[type="button"], input[type="submit"] {
 					
 
                     <input type="file"  id="pngFileInput">
-                </div>
+                </div><br><br>
                 <div class="canvas_container">
                     <div class="bg_text"></div>
                     <canvas width="1" height="1" id="pngDisplay"></canvas>
-                </div>
+                </div><br>
                 <button onclick="downloadAudio();">Скачать WAV</button>
             </div>
         </div>
@@ -93,13 +116,14 @@ button, input[type="button"], input[type="submit"] {
 
 
 
-                    <input type="file" id="wavFileInput">
+                    <input type="file" id="wavFileInput"><br>
                
                 <div class="canvas_container">
                     <div class="bg_text"></div>
                     <canvas width="1" height="1" id="audioDisplay"></canvas>
-                </div>
+                </div><br><br>
                 <button onclick="downloadChannel('left', 'channel', leftChannelCanvas)">Скачать PNG</button>
+				<br><br><button onclick="downloadScaled();" style="font-size: 12px;">Получить огромную квадратную картинку с разрешением 10000x10000</button><canvas hidden="true" id="scaledummy" width="10000" height="10000"></canvas>
             </div>
 
         </div>
@@ -119,6 +143,30 @@ button, input[type="button"], input[type="submit"] {
 	</center>
 </body>
 </html> 
+
+<script>
+// супер скейлер скрипт
+const canvasMain = document.querySelector('#audioDisplay')
+const ctxMain = canvasMain.getContext('2d');
+
+const canvasDummy = document.querySelector('#scaledummy');
+const ctxDummy = canvasDummy.getContext('2d');
+
+let width;
+let height;
+
+function downloadScaled()
+{
+	ctxDummy.drawImage(canvasMain, 0, 0)
+	link.download = "super_upscaled.png";
+    canvasDummy.toBlob(function (blob) {
+		link.href = URL.createObjectURL(blob);
+		link.click();
+    }, "image/png");
+}
+</script>
+
+
 
 
 <script>
@@ -219,6 +267,17 @@ document.addEventListener('play', function(e){
             fileInput(fileList);
         }
 
+
+		function checkAllowPicExt(name) 
+		{
+			for (ext of [".png", ".jpg", ".jfif", ".jpeg"]) // вот тут добвляй разрешенные разрешения
+			{
+				if (name.toLowerCase().includes(ext)) 
+					return true;
+			}
+			return false;
+		}
+
         // Handles the drop zone
         imgDropHandler.ondrop = audioContainer.ondrop = fileInput = function (evt) {
             //restore colors
@@ -230,7 +289,7 @@ document.addEventListener('play', function(e){
             let file = evt.dataTransfer.files[0];
             let reader = new FileReader();
             if (evt.dataTransfer.files.length > 0) {
-                if (file.name.toLowerCase().includes(".png") || file.name.toLowerCase().includes(".jpg") || file.name.toLowerCase().includes(".jfif") || file.name.toLowerCase().includes(".jpeg")) {
+                if (checkAllowPicExt(file.name)) {
                     reader.readAsDataURL(file);
                     reader.onload = function (e2) {
                         // Start PNG Process
@@ -272,8 +331,13 @@ document.addEventListener('play', function(e){
         var pngCanvas = document.getElementById("pngDisplay");
         var pngContext = pngCanvas.getContext("2d");
 
+        const SAMPLE_RATE = 10000;
+        const BITRATE = 16;
+        const N_CHANNELS = 1;
+        const WAV_HEADER_SIZE = 44; // 44 bytes
+		
         const audioCtx = new AudioContext({
-            sampleRate: 10000,
+            sampleRate: SAMPLE_RATE,
         });
 
         let buffer = null;
@@ -341,10 +405,6 @@ document.addEventListener('play', function(e){
             }, "image/png");
         }
 
-        const SAMPLE_RATE = 10000;
-        const BITRATE = 16;
-        const N_CHANNELS = 1;
-        const WAV_HEADER_SIZE = 44; // 44 bytes
 
         function build_wav_header(buf, audio_length) {
             // RIFF
@@ -420,9 +480,10 @@ document.addEventListener('play', function(e){
         }
         const img2audio = (imgBlob) => {
             var img = new Image();
-            img.src = imgBlob;
+            console.log(imgBlob);
+			img.src = imgBlob;
             img.onload = function () {
-                console.log(img.width);
+                console.log(img);
                 pngContext.canvas.width = img.width;
                 pngContext.canvas.height = img.height;
                 pngContext.drawImage(img, 0, 0);
@@ -442,7 +503,7 @@ document.addEventListener('play', function(e){
 
     </script>
 
-
+<!--
 <script>
 const MAX_WIDTH = 3000;
 const QUALITY = 1;
@@ -471,12 +532,14 @@ const readPhoto = async (photo) => {
 };
 
 
-var numba = document.getElementById('dd').value;
-  scaledCanvas.height = numba;
+//var numba = document.getElementById('dd').value;
+  
 
 
 var scaleCanvas = (canvas, scale) => {
+  
   var scaledCanvas = document.createElement("canvas");
+  scaledCanvas.height = 100;
   scaledCanvas.width = 500;
    
 
@@ -521,7 +584,7 @@ async function processReduce(photo) {
 input.addEventListener("change", function (e) {
   processReduce(e.target.files[0]);
 });
-
+ -->
 
 </script>
 

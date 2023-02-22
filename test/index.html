@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ы</title>
+</head>
+<img class="inputpic" src="" width="250" height="250"><input id="imageset" type="file" onchange="readFileToScale(this.files);"> <input type="text" id="scaleh" value="110"> <input type="checkbox" id="smooth"> <label for="smooth">сглаживание (хз работает ли)</label> <button onclick="scale();">сделать масштаб</button> <button onclick="save();">сохранить</button><br>
+<canvas class="scaleCanvasAudio" width="500" height="110"></canvas>
+<script>
+
+const inputPic = document.querySelector('.inputpic');
+const canvasName = '.scaleCanvasAudio';
+const canvasScale = document.querySelector(canvasName);
+const ctxScale = canvasScale.getContext('2d');
+
+let img;
+function readFileToScale(files) 
+{
+	var fileReader = new FileReader();
+	fileReader.readAsDataURL(files[0]);
+	fileReader.onload = function(imgBlob) 
+	{
+		img = new Image();
+		let blobRes = imgBlob.target.result
+		img.src = blobRes;
+		inputPic.src = blobRes;
+	}
+}
+
+function scale() 
+{
+	ctxScale.imageSmoothingEnabled = smooth.checked;
+	let height = scaleh.value;
+	canvasScale.height = height;
+	ctxScale.drawImage(img,0,0,img.width,img.height,0,0,500,height);
+}
+
+function save() 
+{
+	let link = document.createElement("a");
+	link.download = "scaled.png";
+    canvasScale.toBlob(function (blob) {
+		link.href = URL.createObjectURL(blob);
+		link.click();
+    }, "image/png");
+}
+</script>
+</html>
