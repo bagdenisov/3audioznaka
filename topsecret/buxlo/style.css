@@ -1,0 +1,102 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #3B6EA5;
+}
+
+.main {
+	background-color: #F0F0F0;
+	height: 100vh;
+	width: calc(100vh * 1.516);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.container {
+	padding: 2.44vh;
+}
+
+.maincolon {
+	height: 86vh;
+	
+}
+
+.runbutton {
+	position: absolute;
+}
+
+.video {
+	height: 100%;
+	width: 78.182%;
+	float: left;
+}
+
+.wevqVideo {
+	height: 100%;
+}
+
+.panel {
+	display: table-cell;
+	padding-left: 2.44vh;
+}
+
+.start {
+	width: 100%;
+	height: 20vh;
+	font-size: 5vh;
+	line-height: 5vh;
+}
+
+.wevqComment {
+	width: 100%;
+	height: 181px;
+	height: 40vh;
+	resize: none;
+	font-size: 3.0vh;
+	line-height: 3.5vh;
+	border: 0px;
+	background-color: #00f;
+	color: #ff0;
+	margin: 0px;
+	padding: 0px;
+}
+
+.panel p {
+	margin: 0px;
+	margin-bottom: 2.44vh;
+}
+
+.dayscolon {
+	margin-top: 2.44vh;
+	margin-left: 5.09vh;
+}
+
+.dayscolon button {
+	height: 100%;
+	width: 11.29%;
+	font-size: 2.278vh;
+	margin-right: 4.39%;
+}
+
+.dayscolon {
+	height: 6.70vh;
+}
+
+
+.wevqPause {
+	width: 25%;
+	font-size: 5.278vh;
+}
+
+.wevqVolume {
+	width: 70%;
+	margin: 0px;
+	margin-left: 2.5%;
+	margin-right: 2.5%;
+}
+
+.wevqSkip {
+	width: 100%;
+	height: 6.43vh;
+	font-size: 3.75vh;
+}

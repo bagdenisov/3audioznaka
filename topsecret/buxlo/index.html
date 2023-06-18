@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>буХло - Интерактивная онлайн игра</title>
+<meta charset="UTF-8">
+<script src="../wevq.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<div class="main">
+	<div class="container">
+		<div class="maincolon"> 
+			<div class="video"> 
+				<button class="runbutton" onclick="wevq.init()">Запустить игру</button>
+				<video class="wevqVideo"></video>
+				
+			</div>
+			<div class="panel">
+				<p><button class="start" onclick="wevq.setFrame('d1intro')">БУХАТЬ!</button></p>
+				<p><textarea class="wevqComment" readonly=""></textarea></p>
+				<p><button class="wevqSkip" disabled="" onclick="wevq.skip()">Пропустить</button></p>
+				<p><button class="wevqPause" onclick="wevq.videoElement.paused ? function(){wevq.videoElement.play(); this.innerText = '&gt;'}.bind(this)() : function(){wevq.videoElement.pause(); this.innerText = '||'}.bind(this)()">&gt;</button><input class="wevqVolume" type="range" min="0" max="100" step="1" value="100" oninput="wevq.videoElement.volume = this.value / 100"></p>
+			</div>
+		</div>
+		<div class="dayscolon"> 
+			<button class="wevqWarp-day1" style="display: none;" onclick="wevq.warp(this)">1-ый День</button>
+			<button class="wevqWarp-day2" style="display: none;" onclick="wevq.warp(this)">2-ый День</button>
+			<button class="wevqWarp-day3" style="display: none;" onclick="wevq.warp(this)">3-ый День</button>
+			<button class="wevqWarp-day4" style="display: none;" onclick="wevq.warp(this)">4-ый День</button>
+			<button class="wevqWarp-day5" style="display: none;" onclick="wevq.warp(this)">5-ый День</button>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
