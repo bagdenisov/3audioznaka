@@ -23,6 +23,7 @@ body {
 
 .runbutton {
 	position: absolute;
+	z-index: 1;
 }
 
 .video {
@@ -33,6 +34,10 @@ body {
 
 .wevqVideo {
 	height: 100%;
+	background-color: black;
+	aspect-ratio: 4/3;
+	position: relative;
+	z-index: 0;
 }
 
 .panel {

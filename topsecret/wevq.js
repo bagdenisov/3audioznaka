@@ -1,8 +1,7 @@
 // Web Engine Video Quest (wevq)
 class WEVQ {
 	constructor() {
-		this.version = '1.0';
-		var WEVQ_UNTRUSTED_CODE = false;
+		this.version = '1';
 		this.xhr = new XMLHttpRequest();
 		this.xhr.open('GET', 'project.json', true);
 		this.xhr.send();
@@ -33,6 +32,8 @@ class WEVQ {
 		
 		this.scripts = {
 			setState: function(args) {
+				const argCount = 3;
+				if (args.length < argCount) {console.error(this.argError(args, argCount)); return;}						
 				if (Array.isArray(args[1])) {
 					for (let act of args[1]) this.project.actions[act].state = args[2];
 					return;
@@ -40,11 +41,36 @@ class WEVQ {
 				this.project.actions[args[1]].state = args[2];
 			}.bind(this),
 			
-			timeoutAction: function(args) {;
+			timeoutAction: function(args) {
+				const argCount = 3;
+				if (args.length < argCount) {console.error(this.argError(args, argCount)); return;}				
 				this.mountActionFromRef(args[1]);
 				this.timers.push(setTimeout(this.setFrame.bind(this), args[1].timeout * 1000, args[1].moveTo))
 			}.bind(this),
+			
+			custom: function(args) {
+				const argCount = 2;
+				if (args.length < argCount) {console.error(this.argError(args, argCount)); return;}
+				try {WEVQ_UNTRUSTED_CODE} catch (e) {
+					if (e.name === 'ReferenceError') {
+						console.error('This command used a custom script and due to security it has been stopped for run. For allow run custom script please declare a "WEVQ_UNTRUSTED_CODE".\nCode:', args[1]); 
+						return;
+					}
+				}
+				eval(args[1]);
+			}.bind(this),
+			
+			_TEMPLATE: function (args) {
+				const argCount = 2;
+				if (args.length < argCount) {console.error(this.argError(args, argCount)); return;}
+			}.bind(this),
 		}
+		
+		this.preload = {};
+	}
+
+	argError(args, argCount) {
+		return `Script "${args[0]}" require a ${argCount} arguments include a script name. ${args.length} revealed."`;
 	}
 
 	setFrame(frame) {
@@ -63,11 +89,10 @@ class WEVQ {
 		this.actionsEnabled = !!this.actions;
 		if (this.currFrame.type === 3) this.actionsEnabled = false;
 		this.skipElement.disabled = false;
-		if (typeof this.currFrame.skiped === 'undefined') {
+		if (typeof this.currFrame.skipable === 'undefined') {
 			if (!this.currFrame.used || (this.actions && this.currFrame.type !== 3)) this.skipElement.disabled = true;
 		}
-		else this.skipElement.disabled = this.currFrame.skiped;
-		
+		else this.skipElement.disabled = this.currFrame.skipable;
 		switch (this.currFrame.type) {
 			case 1:
 				this.videoElement.loop = true;
@@ -118,7 +143,7 @@ class WEVQ {
 
 	play() {
 		let el = this.videoElement;
-		el.play().then(result => el.volume = 1, error => {el.volume = 0, el.play()});
+		el.play().then(result => {}, error => {console.log('!'); el.volume = 0, el.play()});
 	}
 
 	checkMouseInZone(x1, y1, x2, y2, clientX, clientY) {
@@ -196,16 +221,24 @@ class WEVQ {
 	
 	runScripts(scripts) {
 		if (!scripts) return;
-		if (typeof scripts !== 'object') {console.error('"scripts" is not a object!'); return;}
+		if (typeof scripts !== 'object') {console.error('"scripts" is not a object!', scripts); return;}
 		for (let scr of scripts) {
 			if (!scr) continue;
 			if (typeof scr !== 'object') {console.error('One of the script is not a object!'); continue;}
-			if (scr[0] === 'custom') if (!WEVQ_UNTRUSTED_CODE) {
-				console.error('This command used a custom script and due to security it has been stoped for run. For allow run custom script set "WEVQ_UNTRUSTED_CODE" to "true"');
-				continue;
-			}
+			
 			this.scripts[scr[0]](scr);
 		}
+	}
+	
+	searchPreload() {
+		const fr = this.currFrame;
+		const move = this.project.frames[fr.moveTo];
+		//if (!move) 
+		this.preload(this.project.frames[fr.moveTo]);
+	}
+	
+	preload(movie) {
+		if (!movie) return;
 	}
 }
 
