@@ -68,7 +68,7 @@ class WEVQ {
 		this.bindAction = 0;
 		this.ghostSelItems = [];
 		this.warpButtonHolder = 'wevqWarp-';	
-		this.preloadAllow = true;
+		this.preloadAllow = false;
 		this.scripts = { // this.runScripts([[]])
 			setState: function(args) {
 				const argCount = 3;
